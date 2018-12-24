@@ -1,5 +1,6 @@
 from tkinter import *
 
+
 class Interface:
     """Classe définissant l'interface de base du jeu à savoir :
     - la fenêtre
@@ -12,14 +13,14 @@ class Interface:
         self.canvas = Canvas(self.window, width=self.width, height=self.height, bg='black')
         self.x0, self.y0 = 435, 285
         self.ball = self.canvas.create_oval(self.x0, self.y0, self.x0 + 25, self.y0 + 25, fill='white')
-        self.movement_x = 10
-        self.movement_y = 10
+        self.movement_x = 5
+        self.movement_y = 5
 
-    def showInterface(self):
+    def show_game(self):
         """Méthode permettant d'afficher l'interface du jeu"""
         return self.window, self.canvas.grid(), self.window.mainloop()
 
-    def moveBall(self):
+    def move_ball(self):
         """Méthode permettant de réaliser le mouvement de la balle"""
 
         if self.canvas.coords(self.ball)[0] < 0 or self.canvas.coords(self.ball)[2] > 900:
@@ -28,16 +29,26 @@ class Interface:
             self.movement_y *= -1
 
         self.canvas.move(self.ball, self.movement_x, self.movement_y)
-        self.window.after(40, self.moveBall)
+        self.window.after(40, self.move_ball)
 
 class Player(Interface):
-    pass
+    """Classe définissant un joueur suivant différentes variables :
+    - une raquette
+    - des touches différentes pour chaque joueur"""
+    
+    def __init__(self, side):
+        self.side = side
+
 
 # Création de l'interface de jeu
 pong = Interface()
 
 # Initialisation du mouvement de la balle
-pong.moveBall()
+pong.move_ball()
 
-# Affichage de l'interface de jeu
-pong.showInterface()
+# Création des 2 joueurs
+player1 = Player(0)
+player2 = Player(1)
+
+# Affichage de menu
+pong.show_game()
