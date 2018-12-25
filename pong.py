@@ -1,47 +1,65 @@
 from tkinter import *
 
 
-class Game:
+class Ball:
+    """Classe définissant la balle et ses mouvements"""
     def __init__(self):
-        """Constructeur définissant la fenêtre de jeu (dimensions, couleurs) 
-        ainsi que les aspects graphiques et techniques"""
-
-        # Création de la fenêtre
-        self.window = Tk()
-        self.window.title('Project Pong — Thomas Le Naour')
-        self.width = 900
-        self.height = 600
-        self.canvas = Canvas(self.window, width=self.width, height=self.height, bg='black')
-
-        # Création de la balle et de ses mouvements
-        self.x0, self.y0 = 435, 285
-        self.ball = self.canvas.create_oval(self.x0, self.y0, self.x0 + 25, self.y0 + 25, fill='white')
-        self.movement_x = 5
-        self.movement_y = 5
+        global app, canvas
+        self.ball = canvas.create_oval(435, 285, 460, 310, fill='yellow')
+        self.speed_movement_ball_x = 5
+        self.speed_movement_ball_y = 5
         self.move_ball()
-
-        # Affichage du canvas
-        self.canvas.grid()
-
-    def mainloop(self):
-        """Méthode permettant d'assurer l'ouverture et la fermeture du jeu"""
-
-        return self.window.mainloop()
 
     def move_ball(self):
         """Méthode permettant de réaliser le mouvement de la balle"""
 
-        if self.canvas.coords(self.ball)[0] < 0 or self.canvas.coords(self.ball)[2] > 900:
-            self.movement_x *= -1
-        if self.canvas.coords(self.ball)[1] < 0 or self.canvas.coords(self.ball)[3] > 600:
-            self.movement_y *= -1
+        if canvas.coords(self.ball)[0] < 0 or canvas.coords(self.ball)[2] > 900:
+            self.speed_movement_ball_x *= -1
+        if canvas.coords(self.ball)[1] < 0 or canvas.coords(self.ball)[3] > 600:
+            self.speed_movement_ball_y *= -1
 
-        self.canvas.move(self.ball, self.movement_x, self.movement_y)
-        self.window.after(40, self.move_ball)
+        canvas.move(self.ball, self.speed_movement_ball_x, self.speed_movement_ball_y)
+        app.after(40, self.move_ball)
+
+class Racket:
+    def __init__(self, side):
+        global app, canvas
+        self.side = side
+        self.speed_movement_racket_top = 4
+        self.speed_movement_racket_down = -4
+
+        if self.side == 0:
+            self.racket_left = canvas.create_rectangle(10, 240, 20, 360, fill='white')
+        else:
+            self.racket_right = canvas.create_rectangle(880, 240, 890, 360, fill='white')
+
+    def move_racket(self, event):
+        """Méthode permettant de réaliser le mouvement de la raquette"""
+
+        pass
 
 
-# Initialisation du jeu
-app = Game()
+###############################################################################
+###############################################################################
+###############################################################################
 
-# Fermeture du jeu
+# Création de la fenêtre
+app = Tk()
+app.title('Project Pong — Thomas Le Naour')
+width = 900
+height = 600
+canvas = Canvas(app, width=width, height=height, bg='black')
+line = canvas.create_line(450, 0, 450,  600, fill='white', dash=6)
+
+# Création de la balle et de ses mouvements
+ball = Ball()
+
+# Création des deux raquettes et leurs mouvements
+racket_left = Racket(0)
+racket_right = Racket(1)
+
+# Affichage du canvas
+canvas.grid()
+
+# Fermeture de la fenêtre
 app.mainloop()
