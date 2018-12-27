@@ -12,6 +12,10 @@ class Ball:
         global app, canvas, ball, player_left, player_right
         self.speed_movement_ball_x = 5
         self.speed_movement_ball_y = 5
+        self.score_right = 0
+        self.score_left = 0
+
+        self.move_ball()
 
     def move_ball(self):
         """Méthode permettant de réaliser le mouvement de la balle et les rebonds
@@ -27,10 +31,19 @@ class Ball:
         if len(canvas.find_overlapping(canvas.coords(player_right)[0], canvas.coords(player_right)[1], canvas.coords(player_right)[2], canvas.coords(player_right)[3])) > 1:
             self.speed_movement_ball_x *= -1
 
+        # Paramétrage du système de points
+        if canvas.coords(ball)[0] < 0:
+            self.score_right += 1
+            print(f'Joueur droite gagne {self.score_right}')
+            app.quit()
+        if canvas.coords(ball)[2] > 900:
+            self.score_left += 1
+            print(f'Joueur gauche gagne {self.score_left}')
+            app.quit()
+
         # Mouvement perpetuel de la balle
         canvas.move(ball, self.speed_movement_ball_x, self.speed_movement_ball_y)
         app.after(20, self.move_ball)
-
 
 class Player:
     """Classe définissant les propriétés et mouvements des joueurs"""
@@ -44,8 +57,10 @@ class Player:
         global ball, player_left, player_right
         self.side = side
         self.speed_movement_racket = 30
-        self.block_top = False
-        self.block_bottom = False
+        self.block_racket_left_top = False
+        self.block_racket_right_top = False
+        self.block_racket_left_bottom = False
+        self.block_racket_right_bottom = False
 
         if self.side == 0:
             app.bind('z', self.move_racket)
@@ -54,45 +69,47 @@ class Player:
             app.bind('<Up>', self.move_racket)
             app.bind('<Down>', self.move_racket)
 
-        self.victory()
-
     def move_racket(self, event):
         """Méthode permettant de réaliser le mouvement de la raquette"""
 
         # Paramétrage de la raquette par rapport aux bords du canvas
-        if len(canvas.find_overlapping(0, 0, 900, 0)) == 2:
-            self.block_top = True
+        if len(canvas.find_overlapping(0, 0, 100, 0)) == 1:
+            self.block_racket_left_top = True
         else:
-            self.block_top = False
-        if len(canvas.find_overlapping(0, 600, 900, 600)) == 2:
-            self.block_bottom = True
+            self.block_racket_left_top = False
+        if len(canvas.find_overlapping(900, 0, 800, 0)) == 1:
+            self.block_racket_right_top = True
         else:
-            self.block_bottom = False
+            self.block_racket_right_top = False
+
+        
+        if len(canvas.find_overlapping(0, 600, 100, 600)) == 1:
+            self.block_racket_left_bottom = True
+        else:
+            self.block_racket_left_bottom = False
+        if len(canvas.find_overlapping(900, 600, 800, 600)) == 1:
+            self.block_racket_right_bottom = True
+        else:
+            self.block_racket_right_bottom = False
 
         # Mouvement des raquettes lors de l'appui sur les touches
-        if self.block_top == False:
+        if self.block_racket_left_top == False:
             if repr(event.char) == "'z'":
                 canvas.move(player_left, 0, -self.speed_movement_racket)
+        if self.block_racket_right_top == False:
             if repr(event.char) == "'\\uf700'":
                 canvas.move(player_right, 0, -self.speed_movement_racket)
-        if self.block_bottom == False:
+        if self.block_racket_left_bottom == False:
             if repr(event.char) == "'s'":
                 canvas.move(player_left, 0, self.speed_movement_racket)
+        if self.block_racket_right_bottom == False:
             if repr(event.char) == "'\\uf701'":
                 canvas.move(player_right, 0, self.speed_movement_racket)
-
-    def victory(self):
-        if canvas.coords(ball)[0] < 0:
-            print('Player Right score 1!')
-            app.quit()
-        if canvas.coords(ball)[2] > 900:
-            print('Player Left score 1!')
-            app.quit()
 
 
 ###############################################################################
 ######################      PRROGRAM EXECUTION      ###########################
-##########s#####################################################################
+###############################################################################
 
 # Création de la fenêtre
 app = Tk()
@@ -109,12 +126,11 @@ player_right = canvas.create_rectangle(880, 240, 890, 360, fill='white')
 
 # Initialisation des propriétés
 ball_properties = Ball()
-ball_properties.move_ball()
 player_left_properties = Player(0)
 player_right_properties = Player(1)
 
 # Affichage du canvas
 canvas.grid()
 
-# Fermeture de la fenêtre
+# Ouverture de la boucle du programme
 app.mainloop()
