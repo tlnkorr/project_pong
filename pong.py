@@ -2,15 +2,51 @@ from tkinter import *
 
 
 class Game:
+    """Classe représentant tous les écrans et paramètres de jeu"""
+    
     def __init__(self):
+        """Constructeur principal du jeu qui affiche le menu au lancement"""
         global app
         self.show_menu()
+
+    def show_menu(self):
+        """Méthode permettant d'afficher l'écran de menu"""
+
+        # Création des éléments du menu
+        self.menu = Frame(app, width=900, height=600, bg="black")
+        self.menu.grid_propagate(0)
+        self.game_name = Label(self.menu, text="YNOV: PROJECT PONG — Thomas Le Naour")
+        self.button_play = Button(self.menu, text="PLAY", width=10, height=2, command=self.show_game)
+        self.button_parameters = Button(self.menu, text="PARAMETERS", width=10, height=2, command=self.show_parameters)
+
+        # Affichage du menu
+        self.game_name.place(relx=0.5, rely=0.2, anchor=CENTER)
+        self.button_play.place(relx=0.5, rely=0.4, anchor=CENTER)
+        self.button_parameters.place(relx=0.5, rely=0.6, anchor=CENTER)
+        self.menu.grid()
+
+    def show_parameters(self):
+        """Méthode permettant d'afficher l'écran de paramétrage"""
+
+        self.menu.destroy()
+
+        # Création des élements de l'écran de paramétrage
+        self.parameters = Frame(app, width=900, height=600, bg="black")
+        self.parameters.grid_propagate(0)
+        self.button_return = Button(self.parameters, text="Retour", width=5, command=self.switch_parameters_to_menu)
+        self.label_parameters = Label(self.parameters, text="PARAMETERS")
+
+        # Affichage de l'écran de paramétrage
+        self.button_return.grid(padx=3, pady=3)
+        self.label_parameters.place(relx=0.5, rely=0.1, anchor=CENTER)
+        self.parameters.grid()
 
     def show_game(self):
         """Méthode permettant d'afficher l'écran de jeu"""
 
-        # Création des éléments graphiques
         self.menu.destroy()
+
+        # Création des éléments graphiques
         self.canvas = Canvas(app, width=900, height=600, bg='black')
         self.line = self.canvas.create_line(450, 0, 450,  600, fill='white', dash=6)
         self.ball = self.canvas.create_oval(435, 285, 465, 315, fill='yellow')
@@ -40,21 +76,9 @@ class Game:
         # Affichage du jeu
         self.canvas.grid()
 
-    def show_menu(self):
-        """Méthode permettant d'afficher l'écran de menu"""
-        
-        # Création des éléments du menu
-        self.menu = Frame(app, width=900, height=600, bg="black")
-        self.menu.grid_propagate(0)
-        self.game_name = Label(self.menu, text="YNOV: PROJECT PONG — Thomas Le Naour")
-        self.button_play = Button(self.menu, text="PLAY", width=10, height=2, command=self.show_game)
-        self.button_parameters = Button(self.menu, text="PARAMETERS", width=10, height=2)
-
-        # Affichage du menu
-        self.game_name.place(relx=0.5, rely=0.2, anchor=CENTER)
-        self.button_play.place(relx=0.5, rely=0.4, anchor=CENTER)
-        self.button_parameters.place(relx=0.5, rely=0.6, anchor=CENTER)
-        self.menu.grid()
+    def switch_parameters_to_menu(self):
+        self.parameters.destroy()
+        self.show_menu()
 
     def move_ball(self):
         """Méthode permettant de réaliser le mouvement de la balle et les rebonds
