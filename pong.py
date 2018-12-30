@@ -82,7 +82,6 @@ class Player:
         else:
             self.block_racket_right_top = False
 
-        
         if len(canvas.find_overlapping(0, 600, 100, 600)) == 1:
             self.block_racket_left_bottom = True
         else:
@@ -108,7 +107,7 @@ class Player:
 
 
 ###############################################################################
-######################      PRROGRAM EXECUTION      ###########################
+######################      PROGRAM EXECUTION      ###########################
 ###############################################################################
 
 # Création de la fenêtre
