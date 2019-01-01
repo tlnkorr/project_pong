@@ -7,13 +7,21 @@ class Game:
     def __init__(self):
         """Constructeur principal du jeu qui affiche le menu au lancement"""
         global app
+
+        # Définition des variables paramétrables
+        self.bg_color = 'black'
+        self.ball_color = 'yellow'
+        self.racket_color = 'white'
+        self.list_colors = ['black', 'white', 'yellow', 'green', 'red', 'purple', 'orange', 'blue']
+
+        # Affichage du menu au lancement
         self.show_menu()
 
     def show_menu(self):
         """Méthode permettant d'afficher l'écran de menu"""
 
         # Création des éléments du menu
-        self.menu = Frame(app, width=900, height=600, bg="black")
+        self.menu = Frame(app, width=900, height=600, bg=self.bg_color)
         self.menu.grid_propagate(0)
         self.game_name = Label(self.menu, text="YNOV: PROJECT PONG — Thomas Le Naour")
         self.button_play = Button(self.menu, text="PLAY", width=10, height=2, command=self.show_game)
@@ -31,14 +39,46 @@ class Game:
         self.menu.destroy()
 
         # Création des élements de l'écran de paramétrage
-        self.parameters = Frame(app, width=900, height=600, bg="black")
+        self.parameters = Frame(app, width=900, height=600, bg=self.bg_color)
         self.parameters.grid_propagate(0)
         self.button_return = Button(self.parameters, text="Retour", width=5, command=self.switch_parameters_to_menu)
         self.label_parameters = Label(self.parameters, text="PARAMETERS")
+        self.label_color_racket = Label(self.parameters, text="Racket color", bg='blue')
+        self.label_color_ball = Label(self.parameters, text="Ball color", bg='blue')
+        self.label_color_bg = Label(self.parameters, text="Background color", bg='blue')
+
+        # Element couleur des raquettes
+        self.list_color_racket = Listbox(self.parameters, width=5)
+        for item in self.list_colors:
+            self.list_color_racket.insert(END, item)
+        self.list_color_racket.bind('<ButtonRelease-1>', self.click_on_item_color_racket)
+
+        # Element couleur de la balle
+        self.list_color_ball = Listbox(self.parameters, width=5)
+        for item in self.list_colors:
+            self.list_color_ball.insert(END, item)
+        self.list_color_ball.bind('<ButtonRelease-1>', self.click_on_item_color_ball)
+
+        # Element couleur du background
+        self.list_color_bg = Listbox(self.parameters, width=5)
+        for item in self.list_colors:
+            self.list_color_bg.insert(END, item)
+        self.list_color_bg.bind('<ButtonRelease-1>', self.click_on_item_color_bg)
 
         # Affichage de l'écran de paramétrage
         self.button_return.grid(padx=3, pady=3)
         self.label_parameters.place(relx=0.5, rely=0.1, anchor=CENTER)
+
+        self.label_color_racket.place(rely=0.2)
+        self.list_color_racket.place(rely=0.3)
+
+        self.label_color_ball.place(relx=0.2, rely= 0.2)
+        self.list_color_ball.place(relx= 0.2, rely=0.3)
+
+        self.label_color_bg.place(relx=0.4, rely= 0.2)
+        self.list_color_bg.place(relx= 0.4, rely=0.3)
+
+        self.list_color_bg
         self.parameters.grid()
 
     def show_game(self):
@@ -47,11 +87,11 @@ class Game:
         self.menu.destroy()
 
         # Création des éléments graphiques
-        self.canvas = Canvas(app, width=900, height=600, bg='black')
+        self.canvas = Canvas(app, width=900, height=600, bg=self.bg_color)
         self.line = self.canvas.create_line(450, 0, 450,  600, fill='white', dash=6)
-        self.ball = self.canvas.create_oval(435, 285, 465, 315, fill='yellow')
-        self.player_left = self.canvas.create_rectangle(10, 240, 20, 360, fill='white')
-        self.player_right = self.canvas.create_rectangle(880, 240, 890, 360, fill='white')
+        self.ball = self.canvas.create_oval(435, 285, 465, 315, fill=self.ball_color)
+        self.player_left = self.canvas.create_rectangle(10, 240, 20, 360, fill=self.racket_color)
+        self.player_right = self.canvas.create_rectangle(880, 240, 890, 360, fill=self.racket_color)
 
         # Variables de gestion de la vitesse de mouvement de la balle
         self.speed_movement_ball_x = 5
@@ -77,6 +117,8 @@ class Game:
         self.canvas.grid()
 
     def switch_parameters_to_menu(self):
+        """Méthode permettant de switcher entre l'écran de paramètres et l'écran de menu"""
+
         self.parameters.destroy()
         self.show_menu()
 
@@ -141,6 +183,18 @@ class Game:
         if self.block_racket_right_bottom == False:
             if repr(event.char) == "'\\uf701'":
                 self.canvas.move(self.player_right, 0, self.speed_movement_racket)
+
+    def click_on_item_color_racket(self, event):
+        index = self.list_color_racket.curselection()
+        self.racket_color = self.list_color_racket.get(index)
+
+    def click_on_item_color_ball(self, event):
+        index = self.list_color_ball.curselection()
+        self.ball_color = self.list_color_ball.get(index)
+
+    def click_on_item_color_bg(self, event):
+        index = self.list_color_bg.curselection()
+        self.bg_color = self.list_color_bg.get(index)
 
 
 ###############################################################################
