@@ -12,6 +12,8 @@ class Game:
         self.bg_color = 'black'
         self.ball_color = 'yellow'
         self.racket_color = 'white'
+        self.speed_movement_ball_x = 5
+        self.speed_movement_ball_y = 5
         self.list_colors = ['black', 'white', 'yellow', 'green', 'red', 'purple', 'orange', 'blue']
 
         # Affichage du menu au lancement
@@ -46,6 +48,7 @@ class Game:
         self.label_color_racket = Label(self.parameters, text="Racket color", bg='blue')
         self.label_color_ball = Label(self.parameters, text="Ball color", bg='blue')
         self.label_color_bg = Label(self.parameters, text="Background color", bg='blue')
+        self.label_speed_ball = Label(self.parameters, text="Speed ball", bg='blue')
 
         # Element couleur des raquettes
         self.list_color_racket = Listbox(self.parameters, width=5)
@@ -65,6 +68,10 @@ class Game:
             self.list_color_bg.insert(END, item)
         self.list_color_bg.bind('<ButtonRelease-1>', self.click_on_item_color_bg)
 
+        # Element vitesse de la balle
+        self.scale = Scale(self.parameters, orient=HORIZONTAL, from_=1, to=10, resolution=1, command=self.change_speed_ball)
+        self.scale.set(5)
+
         # Affichage de l'écran de paramétrage
         self.button_return.grid(padx=3, pady=3)
         self.label_parameters.place(relx=0.5, rely=0.1, anchor=CENTER)
@@ -78,7 +85,9 @@ class Game:
         self.label_color_bg.place(relx=0.4, rely= 0.2)
         self.list_color_bg.place(relx= 0.4, rely=0.3)
 
-        self.list_color_bg
+        self.label_speed_ball.place(relx=0.6, rely=0.2)
+        self.scale.place(relx=0.6, rely=0.3)
+
         self.parameters.grid()
 
     def show_game(self):
@@ -92,10 +101,6 @@ class Game:
         self.ball = self.canvas.create_oval(435, 285, 465, 315, fill=self.ball_color)
         self.player_left = self.canvas.create_rectangle(10, 240, 20, 360, fill=self.racket_color)
         self.player_right = self.canvas.create_rectangle(880, 240, 890, 360, fill=self.racket_color)
-
-        # Variables de gestion de la vitesse de mouvement de la balle
-        self.speed_movement_ball_x = 5
-        self.speed_movement_ball_y = 5
 
         # Variable de gestions des mouvements des raquettes
         self.speed_movement_racket = 30
@@ -185,16 +190,28 @@ class Game:
                 self.canvas.move(self.player_right, 0, self.speed_movement_racket)
 
     def click_on_item_color_racket(self, event):
+        """Méthode permettant de changer la couleur de la raquette"""
+
         index = self.list_color_racket.curselection()
         self.racket_color = self.list_color_racket.get(index)
 
     def click_on_item_color_ball(self, event):
+        """Méthode permettant de changer la couleur de la balle"""
+
         index = self.list_color_ball.curselection()
         self.ball_color = self.list_color_ball.get(index)
 
     def click_on_item_color_bg(self, event):
+        """Méthode permettant de changer la couleur du background"""
+        
         index = self.list_color_bg.curselection()
         self.bg_color = self.list_color_bg.get(index)
+
+    def change_speed_ball(self, event):
+        """Méthode permettant de changer la vitesse de la balle"""
+
+        self.speed_movement_ball_x = int(event)
+        self.speed_movement_ball_y = int(event)
 
 
 ###############################################################################
