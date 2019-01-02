@@ -1,4 +1,5 @@
 from tkinter import *
+import time
 
 
 class Game:
@@ -53,32 +54,33 @@ class Game:
         self.label_color_bg = Label(self.parameters, text="Background color", bg='blue')
         self.label_speed_ball = Label(self.parameters, text="Speed ball", bg='blue')
         self.label_winning_points = Label(self.parameters, text="Number of winning points", bg='blue')
+        self.label_text_info = Label(self.parameters, text="Press Back to save parameters")
 
         # Element couleur des raquettes
         self.list_color_racket = Listbox(self.parameters, width=5)
         for item in self.list_colors:
             self.list_color_racket.insert(END, item)
-        self.list_color_racket.bind('<ButtonRelease-1>', self.click_on_item_color_racket)
+        self.list_color_racket.bind('<ButtonRelease-1>', self.change_color_racket)
 
         # Element couleur de la balle
         self.list_color_ball = Listbox(self.parameters, width=5)
         for item in self.list_colors:
             self.list_color_ball.insert(END, item)
-        self.list_color_ball.bind('<ButtonRelease-1>', self.click_on_item_color_ball)
+        self.list_color_ball.bind('<ButtonRelease-1>', self.change_color_ball)
 
         # Element couleur du background
         self.list_color_bg = Listbox(self.parameters, width=5)
         for item in self.list_colors:
             self.list_color_bg.insert(END, item)
-        self.list_color_bg.bind('<ButtonRelease-1>', self.click_on_item_color_bg)
+        self.list_color_bg.bind('<ButtonRelease-1>', self.change_color_bg)
 
         # Element vitesse de la balle
         self.scale = Scale(self.parameters, orient=HORIZONTAL, from_=1, to=10, resolution=1, command=self.change_speed_ball)
-        self.scale.set(5)
+        self.scale.set(self.speed_movement_ball_x)
 
         # Element nombre de points gagnants
         self.scale_points = Scale(self.parameters, orient=HORIZONTAL, from_=1, to=10, resolution=1, command=self.change_winning_points)
-        self.scale_points.set(1)
+        self.scale_points.set(self.winning_points)
 
         # Affichage de l'écran de paramétrage
         self.button_return.grid(padx=3, pady=3)
@@ -98,6 +100,8 @@ class Game:
 
         self.label_winning_points.place(relx=0.8, rely=0.2)
         self.scale_points.place(relx=0.8, rely=0.3)
+
+        self.label_text_info.place(relx=0.5, rely=0.9, anchor=CENTER)
 
         self.parameters.grid()
 
@@ -136,6 +140,8 @@ class Game:
         - 0 pour le joueur gauche 
         - 1 pour le joueur droite"""
 
+        self.now = round(time.time() - self.now_start, 2)
+
         if side == 0:
             self.winner = 'RIGHT'
         else:
@@ -143,7 +149,7 @@ class Game:
 
         # Création des éléments graphiques
         self.victory = Canvas(app, width=900, height=600, bg=self.bg_color)
-        self.label_victory = Label(self.victory, text=f"PLAYER {self.winner} WIN", bg='red')
+        self.label_victory = Label(self.victory, text=f"PLAYER {self.winner} WIN in {self.now} seconds", bg='red')
         self.scores = Label(self.victory, text=f'{self.score_left} - {self.score_right}')
         self.button_menu = Button(self.victory, text="Menu", command=self.switch_victory_to_menu)
         self.button_replay = Button(self.victory, text="Replay", command=self.switch_victory_to_game)
@@ -166,6 +172,7 @@ class Game:
 
         self.menu.destroy()
         self.show_game()
+        self.now_start = time.time()
 
     def switch_menu_to_parameters(self):
         """Méthode permettant de switcher entre l'écran de menu et l'écran de paramètres"""
@@ -179,6 +186,7 @@ class Game:
         self.victory.destroy()
         self.score_left = 0
         self.score_right = 0
+        self.now_start = 0
         self.show_menu()
 
     def switch_victory_to_game(self):
@@ -187,11 +195,13 @@ class Game:
         self.victory.destroy()
         self.score_left = 0
         self.score_right = 0
+        self.now_start = time.time()
+        self.now = 0
         self.show_game()
 
     def move_ball(self):
-        """Méthode permettant de réaliser le mouvement de la balle et les rebonds
-        sur les raquettes"""
+        """Méthode permettant de réaliser le mouvement de la balle, les rebonds
+        sur les raquettes et les bords et le système de point"""
 
         # Paramétrage des rebonds de la balle par rapport au canvas
         if self.canvas.coords(self.ball)[1] < 0 or self.canvas.coords(self.ball)[3] > 600:
@@ -262,19 +272,19 @@ class Game:
             if repr(event.char) == "'\\uf701'":
                 self.canvas.move(self.player_right, 0, self.speed_movement_racket)
 
-    def click_on_item_color_racket(self, event):
+    def change_color_racket(self, event):
         """Méthode permettant de changer la couleur de la raquette"""
 
         self.index = self.list_color_racket.curselection()
         self.racket_color = self.list_color_racket.get(self.index)
 
-    def click_on_item_color_ball(self, event):
+    def change_color_ball(self, event):
         """Méthode permettant de changer la couleur de la balle"""
 
         self.index = self.list_color_ball.curselection()
         self.ball_color = self.list_color_ball.get(self.index)
 
-    def click_on_item_color_bg(self, event):
+    def change_color_bg(self, event):
         """Méthode permettant de changer la couleur du background"""
         
         self.index = self.list_color_bg.curselection()
