@@ -131,9 +131,29 @@ class Game:
         self.canvas.grid()
 
     def show_victory(self, side):
-        """Méthode permettant d'afficher la page de victoire à la fin de la partie"""
+        """Méthode permettant d'afficher la page de victoire à la fin de la
+        partie en fonction du côté gagnant :
+        - 0 pour le joueur gauche 
+        - 1 pour le joueur droite"""
 
-        pass
+        if side == 0:
+            self.winner = 'RIGHT'
+        else:
+            self.winner = 'LEFT'
+
+        # Création des éléments graphiques
+        self.victory = Canvas(app, width=900, height=600, bg=self.bg_color)
+        self.label_victory = Label(self.victory, text=f"PLAYER {self.winner} WIN", bg='red')
+        self.scores = Label(self.victory, text=f'{self.score_left} - {self.score_right}')
+        self.button_menu = Button(self.victory, text="Menu", command=self.switch_victory_to_menu)
+        self.button_replay = Button(self.victory, text="Replay", command=self.switch_victory_to_game)
+
+        # Affichage de la page de victoire
+        self.label_victory.place(relx=0.5, rely=0.3, anchor=CENTER)
+        self.scores.place(relx=0.5, rely= 0.5, anchor=CENTER)
+        self.button_menu.place(relx=0.4, rely= 0.7, anchor=CENTER)
+        self.button_replay.place(relx=0.6, rely= 0.7, anchor=CENTER)
+        self.victory.grid()
 
     def switch_parameters_to_menu(self):
         """Méthode permettant de switcher entre l'écran de paramètres et l'écran de menu"""
@@ -152,6 +172,22 @@ class Game:
 
         self.menu.destroy()
         self.show_parameters()
+
+    def switch_victory_to_menu(self):
+        """Méthode permettant de switcher entre l'écran de menu et l'écran de paramètres"""
+
+        self.victory.destroy()
+        self.score_left = 0
+        self.score_right = 0
+        self.show_menu()
+
+    def switch_victory_to_game(self):
+        """Méthode permettant de switcher entre l'écran de menu et l'écran de paramètres"""
+
+        self.victory.destroy()
+        self.score_left = 0
+        self.score_right = 0
+        self.show_game()
 
     def move_ball(self):
         """Méthode permettant de réaliser le mouvement de la balle et les rebonds
