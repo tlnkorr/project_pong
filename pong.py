@@ -14,7 +14,12 @@ class Game:
         self.racket_color = 'white'
         self.speed_movement_ball_x = 5
         self.speed_movement_ball_y = 5
-        self.list_colors = ['black', 'white', 'yellow', 'green', 'red', 'purple', 'orange', 'blue']
+        self.winning_points = 1
+        self.list_colors = ['black', 'white', 'yellow', 'green', 'red', 'purple', 'orange', 'blue', 'pink']
+
+        # Définition des variables des scores de chaque joueur
+        self.score_left = 0
+        self.score_right = 0
 
         # Affichage du menu au lancement
         self.show_menu()
@@ -26,8 +31,8 @@ class Game:
         self.menu = Frame(app, width=900, height=600, bg=self.bg_color)
         self.menu.grid_propagate(0)
         self.game_name = Label(self.menu, text="YNOV: PROJECT PONG — Thomas Le Naour")
-        self.button_play = Button(self.menu, text="PLAY", width=10, height=2, command=self.show_game)
-        self.button_parameters = Button(self.menu, text="PARAMETERS", width=10, height=2, command=self.show_parameters)
+        self.button_play = Button(self.menu, text="PLAY", width=10, height=2, command=self.switch_menu_to_game)
+        self.button_parameters = Button(self.menu, text="PARAMETERS", width=10, height=2, command=self.switch_menu_to_parameters)
 
         # Affichage du menu
         self.game_name.place(relx=0.5, rely=0.2, anchor=CENTER)
@@ -38,17 +43,16 @@ class Game:
     def show_parameters(self):
         """Méthode permettant d'afficher l'écran de paramétrage"""
 
-        self.menu.destroy()
-
         # Création des élements de l'écran de paramétrage
         self.parameters = Frame(app, width=900, height=600, bg=self.bg_color)
         self.parameters.grid_propagate(0)
-        self.button_return = Button(self.parameters, text="Retour", width=5, command=self.switch_parameters_to_menu)
+        self.button_return = Button(self.parameters, text="Back", width=5, command=self.switch_parameters_to_menu)
         self.label_parameters = Label(self.parameters, text="PARAMETERS")
         self.label_color_racket = Label(self.parameters, text="Racket color", bg='blue')
         self.label_color_ball = Label(self.parameters, text="Ball color", bg='blue')
         self.label_color_bg = Label(self.parameters, text="Background color", bg='blue')
         self.label_speed_ball = Label(self.parameters, text="Speed ball", bg='blue')
+        self.label_winning_points = Label(self.parameters, text="Number of winning points", bg='blue')
 
         # Element couleur des raquettes
         self.list_color_racket = Listbox(self.parameters, width=5)
@@ -72,6 +76,10 @@ class Game:
         self.scale = Scale(self.parameters, orient=HORIZONTAL, from_=1, to=10, resolution=1, command=self.change_speed_ball)
         self.scale.set(5)
 
+        # Element nombre de points gagnants
+        self.scale_points = Scale(self.parameters, orient=HORIZONTAL, from_=1, to=10, resolution=1, command=self.change_winning_points)
+        self.scale_points.set(1)
+
         # Affichage de l'écran de paramétrage
         self.button_return.grid(padx=3, pady=3)
         self.label_parameters.place(relx=0.5, rely=0.1, anchor=CENTER)
@@ -88,13 +96,14 @@ class Game:
         self.label_speed_ball.place(relx=0.6, rely=0.2)
         self.scale.place(relx=0.6, rely=0.3)
 
+        self.label_winning_points.place(relx=0.8, rely=0.2)
+        self.scale_points.place(relx=0.8, rely=0.3)
+
         self.parameters.grid()
 
     def show_game(self):
         """Méthode permettant d'afficher l'écran de jeu"""
-
-        self.menu.destroy()
-
+            
         # Création des éléments graphiques
         self.canvas = Canvas(app, width=900, height=600, bg=self.bg_color)
         self.line = self.canvas.create_line(450, 0, 450,  600, fill='white', dash=6)
@@ -121,11 +130,28 @@ class Game:
         # Affichage du jeu
         self.canvas.grid()
 
+    def show_victory(self, side):
+        """Méthode permettant d'afficher la page de victoire à la fin de la partie"""
+
+        pass
+
     def switch_parameters_to_menu(self):
         """Méthode permettant de switcher entre l'écran de paramètres et l'écran de menu"""
 
         self.parameters.destroy()
         self.show_menu()
+
+    def switch_menu_to_game(self):
+        """Méthode permettant de switcher entre l'écran de menu et l'écran de jeu"""
+
+        self.menu.destroy()
+        self.show_game()
+
+    def switch_menu_to_parameters(self):
+        """Méthode permettant de switcher entre l'écran de menu et l'écran de paramètres"""
+
+        self.menu.destroy()
+        self.show_parameters()
 
     def move_ball(self):
         """Méthode permettant de réaliser le mouvement de la balle et les rebonds
@@ -143,11 +169,22 @@ class Game:
 
         # Paramétrage du système de points
         if self.canvas.coords(self.ball)[0] < 0:
+            self.score_right += 1
             self.canvas.destroy()
-            self.show_menu()
+
+            if self.score_right == self.winning_points:
+                self.show_victory(0)
+            else:
+                return self.show_game()
+
         if self.canvas.coords(self.ball)[2] > 900:
+            self.score_left += 1
             self.canvas.destroy()
-            self.show_menu()
+
+            if self.score_left == self.winning_points:
+                self.show_victory(1)
+            else:
+                return self.show_game()
 
         # Mouvement perpetuel de la balle
         self.canvas.move(self.ball, self.speed_movement_ball_x, self.speed_movement_ball_y)
@@ -192,26 +229,31 @@ class Game:
     def click_on_item_color_racket(self, event):
         """Méthode permettant de changer la couleur de la raquette"""
 
-        index = self.list_color_racket.curselection()
-        self.racket_color = self.list_color_racket.get(index)
+        self.index = self.list_color_racket.curselection()
+        self.racket_color = self.list_color_racket.get(self.index)
 
     def click_on_item_color_ball(self, event):
         """Méthode permettant de changer la couleur de la balle"""
 
-        index = self.list_color_ball.curselection()
-        self.ball_color = self.list_color_ball.get(index)
+        self.index = self.list_color_ball.curselection()
+        self.ball_color = self.list_color_ball.get(self.index)
 
     def click_on_item_color_bg(self, event):
         """Méthode permettant de changer la couleur du background"""
         
-        index = self.list_color_bg.curselection()
-        self.bg_color = self.list_color_bg.get(index)
+        self.index = self.list_color_bg.curselection()
+        self.bg_color = self.list_color_bg.get(self.index)
 
     def change_speed_ball(self, event):
         """Méthode permettant de changer la vitesse de la balle"""
 
         self.speed_movement_ball_x = int(event)
         self.speed_movement_ball_y = int(event)
+
+    def change_winning_points(self, event):
+        """Méthode permettant de changer le nombre de points gagnants"""
+
+        self.winning_points = int(event)
 
 
 ###############################################################################
