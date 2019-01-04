@@ -1,3 +1,8 @@
+#############################################################
+####  PROJECT 2 — PONG GAME                    ##############
+####  Thomas Le Naour — Ynov Informatique B1A  ##############
+#############################################################
+
 from tkinter import *
 import time
 
@@ -30,15 +35,16 @@ class Game:
 
         # Création des éléments du menu
         self.menu = Frame(app, width=900, height=600, bg=self.bg_color)
-        self.menu.grid_propagate(0)
         self.game_name = Label(self.menu, text="YNOV: PROJECT PONG — Thomas Le Naour")
         self.button_play = Button(self.menu, text="PLAY", width=10, height=2, command=self.switch_menu_to_game)
         self.button_parameters = Button(self.menu, text="PARAMETERS", width=10, height=2, command=self.switch_menu_to_parameters)
+        self.button_quit = Button(self.menu, text="Quit", command=app.quit)
 
         # Affichage du menu
         self.game_name.place(relx=0.5, rely=0.2, anchor=CENTER)
         self.button_play.place(relx=0.5, rely=0.4, anchor=CENTER)
         self.button_parameters.place(relx=0.5, rely=0.6, anchor=CENTER)
+        self.button_quit.place(relx=0.5, rely=0.9, anchor=CENTER)
         self.menu.grid()
 
     def show_parameters(self):
@@ -148,7 +154,7 @@ class Game:
             self.winner = 'LEFT'
 
         # Création des éléments graphiques
-        self.victory = Canvas(app, width=900, height=600, bg=self.bg_color)
+        self.victory = Frame(app, width=900, height=600, bg=self.bg_color)
         self.label_victory = Label(self.victory, text=f"PLAYER {self.winner} WIN in {self.now} seconds", bg='red')
         self.scores = Label(self.victory, text=f'{self.score_left} - {self.score_right}')
         self.button_menu = Button(self.victory, text="Menu", command=self.switch_victory_to_menu)
@@ -208,9 +214,13 @@ class Game:
             self.speed_movement_ball_y *= -1
 
         # Paramétrage des rebonds de la balle par rapport aux raquettes
-        if len(self.canvas.find_overlapping(self.canvas.coords(self.player_left)[0], self.canvas.coords(self.player_left)[1], self.canvas.coords(self.player_left)[2], self.canvas.coords(self.player_left)[3])) > 1:
+        if len(self.canvas.find_overlapping(self.canvas.coords(self.player_left)[0], \
+        self.canvas.coords(self.player_left)[1], self.canvas.coords(self.player_left)[2], \
+        self.canvas.coords(self.player_left)[3])) > 1:
             self.speed_movement_ball_x *= -1
-        if len(self.canvas.find_overlapping(self.canvas.coords(self.player_right)[0], self.canvas.coords(self.player_right)[1], self.canvas.coords(self.player_right)[2], self.canvas.coords(self.player_right)[3])) > 1:
+        if len(self.canvas.find_overlapping(self.canvas.coords(self.player_right)[0], \
+        self.canvas.coords(self.player_right)[1], self.canvas.coords(self.player_right)[2], \
+        self.canvas.coords(self.player_right)[3])) > 1:
             self.speed_movement_ball_x *= -1
 
         # Paramétrage du système de points
@@ -302,11 +312,12 @@ class Game:
         self.winning_points = int(event)
 
 
-###############################################################################
-######################       PROGRAM EXECUTION      ###########################
-###############################################################################
+#############################################################
+####  PROGRAM EXECUTION  ####################################
+#############################################################
 
-app = Tk()
-app.geometry('900x600')
-game = Game()
-app.mainloop()
+if __name__ == "__main__":
+    app = Tk()
+    app.geometry('900x600')
+    game = Game()
+    app.mainloop()
