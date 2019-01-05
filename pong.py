@@ -272,13 +272,13 @@ class Game:
             if repr(event.char) == "'z'":
                 self.canvas.move(self.player_left, 0, -self.speed_movement_racket)
         if self.block_racket_right_top == False:
-            if repr(event.char) == "'\\uf700'":
+            if repr(event.keysym) == "'Up'":
                 self.canvas.move(self.player_right, 0, -self.speed_movement_racket)
         if self.block_racket_left_bottom == False:
             if repr(event.char) == "'s'":
                 self.canvas.move(self.player_left, 0, self.speed_movement_racket)
         if self.block_racket_right_bottom == False:
-            if repr(event.char) == "'\\uf701'":
+            if repr(event.keysym) == "'Down'":
                 self.canvas.move(self.player_right, 0, self.speed_movement_racket)
 
     def change_color_racket(self, event):
