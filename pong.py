@@ -187,7 +187,7 @@ class Game:
         self.show_parameters()
 
     def switch_victory_to_menu(self):
-        """Méthode permettant de switcher entre l'écran de menu et l'écran de paramètres"""
+        """Méthode permettant de switcher entre l'écran de victoire et l'écran de menu"""
 
         self.victory.destroy()
         self.score_left = 0
@@ -196,7 +196,7 @@ class Game:
         self.show_menu()
 
     def switch_victory_to_game(self):
-        """Méthode permettant de switcher entre l'écran de menu et l'écran de paramètres"""
+        """Méthode permettant de switcher entre l'écran de victoire et l'écran de jeu"""
 
         self.victory.destroy()
         self.score_left = 0
@@ -232,7 +232,6 @@ class Game:
                 self.show_victory(0)
             else:
                 return self.show_game()
-
         if self.canvas.coords(self.ball)[2] > 900:
             self.score_left += 1
             self.canvas.destroy()
